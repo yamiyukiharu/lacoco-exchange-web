@@ -21,10 +21,12 @@ function ExchangeWidget({ tokens, prices }: Props) {
   const [fromAmount, setFromAmount] = useState("");
   const [toAmount, setToAmount] = useState("");
 
-  // useEffect(() => {
-  //   // update toAmount when fromAmount changes
-  //   setToAmount(convertAmounts(fromTokenId, toTokenId, fromAmount));
-  // }, [tokens]);
+  useEffect(() => {
+    const toToken = tokens[toTokenId];
+    const res = convertAmounts(fromAmount, prices[fromTokenId], prices[toTokenId], toToken.decimals);
+    setToAmount(res);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prices]);
 
   const handleFromTokenChange = (tokenId: string) => {
     // account for change in decimal places of different tokens
