@@ -1,13 +1,12 @@
-import { Token } from "@/types";
 import BigNumber from "bignumber.js";
 
-export function convertAmounts(fromToken: Token, toToken: Token, amount: string): string {
+export function convertAmounts(amount: string, fromPrice: number, toPrice: number, decimals: number): string {
   if (amount == "") {
     return "";
   }
   return new BigNumber(amount)
-    .multipliedBy(fromToken.usdPrice)
-    .dividedBy(toToken.usdPrice)
-    .decimalPlaces(toToken.decimals, BigNumber.ROUND_DOWN)
+    .multipliedBy(fromPrice)
+    .dividedBy(toPrice)
+    .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
     .toString();
 }

@@ -1,20 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
 import AmountInput from "@components/AmountInput";
 import TokenSelector from "@/components/TokenSelector";
-import { Token } from "@/types";
+import { TokenInfo } from "@/types";
 import TokenDropDown from "../TokenDropDown";
 
 interface Props {
   label: string;
-  tokens: Token[];
+  tokens: TokenInfo;
   amount: string;
-  selectedToken: Token;
+  selectedTokenId: string;
   onAmountChange: (e: string) => void;
-  onTokenChange: (e: Token) => void;
+  onSelectionChange: (id: string) => void;
 }
 
 function ExchangeInputs(props: Props) {
-  const { label, tokens, amount, selectedToken, onAmountChange, onTokenChange } = props;
+  const { label, tokens, amount, selectedTokenId, onAmountChange, onSelectionChange } = props;
 
   const ref = useRef<HTMLDivElement>(null);
   const [dropDown, setDropDown] = useState(false);
@@ -33,20 +33,22 @@ function ExchangeInputs(props: Props) {
   }, [ref]);
 
   function handleTokenClick() {
-    setDropDown(value => !value);
+    setDropDown((value) => !value);
   }
 
-  function handleTokenChange(token: Token) {
-    onTokenChange(token);
+  function handleTokenChange(id: string) {
+    onSelectionChange(id);
     setDropDown(false);
   }
+
+  const { icon, symbol } = tokens[selectedTokenId];
 
   return (
     <div>
       <div className="text-base font-light">{label}</div>
       <div className="h-12 flex flex-row gap-x-1 items-center justify-between">
         <AmountInput amount={amount} onChange={onAmountChange} />
-        <TokenSelector token={selectedToken} onClick={handleTokenClick}/>
+        <TokenSelector icon={icon} symbol={symbol} onClick={handleTokenClick} />
       </div>
 
       {dropDown && (

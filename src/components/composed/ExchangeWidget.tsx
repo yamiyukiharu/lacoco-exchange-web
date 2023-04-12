@@ -1,73 +1,91 @@
+import _ from "lodash";
 import React, { useEffect, useState } from "react";
 import BigNumber from "bignumber.js";
 import SwapButton from "@components/SwapButton";
 import ExchangeInputs from "@components/composed/ExchangeInputs";
 import { convertAmounts } from "@/utils/convertAmounts";
-import { Token } from "@/types";
+import { TokenInfo, TokenPrices } from "@/types";
 
 interface Props {
-  tokens: Token[];
+  tokens: TokenInfo;
+  prices: TokenPrices;
 }
 
-function ExchangeWidget({ tokens }: Props) {
-  const [fromTokenList, setFromTokenList] = useState(tokens.filter((token) => token.symbol !== tokens[1].symbol));
-  const [toTokenList, setToTokenList] = useState(tokens.filter((token) => token.symbol !== tokens[0].symbol));
+function ExchangeWidget({ tokens, prices }: Props) {
+  const tokenIds = Object.keys(tokens);
+  const [fromTokenList, setFromTokenList] = useState(_.omit(tokens, tokenIds[0]) as TokenInfo);
+  const [toTokenList, setToTokenList] = useState(_.omit(tokens, tokenIds[1]) as TokenInfo);
 
-  const [fromToken, setFromToken] = useState(tokens[0]);
-  const [toToken, setToToken] = useState(tokens[1]);
+  const [fromTokenId, setFromTokenId] = useState(tokenIds[1]);
+  const [toTokenId, setToTokenId] = useState(tokenIds[0]);
   const [fromAmount, setFromAmount] = useState("");
   const [toAmount, setToAmount] = useState("");
 
-  const handleFromTokenChange = (token: Token) => {
-    // account for change in decimal places of different tokens
-    const newFromAmount =
-      fromAmount == "" ? "" : new BigNumber(fromAmount).decimalPlaces(token.decimals, BigNumber.ROUND_DOWN).toString();
+  // useEffect(() => {
+  //   // update toAmount when fromAmount changes
+  //   setToAmount(convertAmounts(fromTokenId, toTokenId, fromAmount));
+  // }, [tokens]);
 
-    const res = convertAmounts(token, toToken, newFromAmount);
+  const handleFromTokenChange = (tokenId: string) => {
+    // account for change in decimal places of different tokens
+    const fromToken = tokens[tokenId];
+    const toToken = tokens[toTokenId];
+    const newFromAmount =
+      fromAmount == ""
+        ? ""
+        : new BigNumber(fromAmount).decimalPlaces(fromToken.decimals, BigNumber.ROUND_DOWN).toString();
+
+    const res = convertAmounts(newFromAmount, prices[tokenId], prices[toTokenId], toToken.decimals);
     setFromAmount(newFromAmount);
     setToAmount(res);
-    setFromToken(token);
-    setToTokenList(tokens.filter((t) => t.symbol !== token.symbol));
+    setFromTokenId(tokenId);
+    setToTokenList(_.omit(tokens, tokenId) as TokenInfo);
   };
 
-  const handleToTokenChange = (token: Token) => {
-    // We prioritise fromAmount, so update toAmount when toToken changes
-    const res = convertAmounts(fromToken, token, fromAmount);
+  const handleToTokenChange = (tokenId: string) => {
+    // We prioritise fromAmount, so update toAmount when toTokenId changes
+    const toToken = tokens[tokenId];
+    const res = convertAmounts(fromAmount, prices[fromTokenId], prices[tokenId], toToken.decimals);
     setToAmount(res);
-    setToToken(token);
-    setFromTokenList(tokens.filter((t) => t.symbol !== token.symbol));
+    setToTokenId(tokenId);
+    setFromTokenList(_.omit(tokens, tokenId) as TokenInfo);
   };
 
   const handleTokenSwap = () => {
     // keep fromAmount constant and update only toAmount
-    setToAmount(convertAmounts(toToken, fromToken, fromAmount));
-    setFromTokenList(tokens.filter((t) => t.symbol !== fromToken.symbol));
-    setToTokenList(tokens.filter((t) => t.symbol !== toToken.symbol));
-    setFromToken(toToken);
-    setToToken(fromToken);
+    const fromToken = tokens[fromTokenId];
+    setFromTokenId(toTokenId);
+    setToTokenId(fromTokenId);
+    setToAmount(convertAmounts(fromAmount, prices[toTokenId], prices[fromTokenId], fromToken.decimals));
+    setFromTokenList(_.omit(tokens, fromTokenId) as TokenInfo);
+    setToTokenList(_.omit(tokens, toTokenId) as TokenInfo);
   };
 
-  const isValidAmount = (token: Token, amount: string) => {
-    const floatOnly = new RegExp(`^(?:\\d+|\\d*\\.\\d{0,${token.decimals}})$`);
+  const isValidAmount = (amount: string, tokenDecimals: number) => {
+    const floatOnly = new RegExp(`^(?:\\d+|\\d*\\.\\d{0,${tokenDecimals}})$`);
     return floatOnly.test(amount) || amount === "";
   };
 
   const handleFromAmountChange = (amount: string) => {
-    if (!isValidAmount(fromToken, amount)) {
+    const fromToken = tokens[fromTokenId];
+    const toToken = tokens[toTokenId];
+    if (!isValidAmount(amount, fromToken.decimals)) {
       return;
     }
 
-    const res = convertAmounts(fromToken, toToken, amount);
+    const res = convertAmounts(amount, prices[fromTokenId], prices[toTokenId], toToken.decimals);
     setFromAmount(amount);
     setToAmount(res);
   };
 
   const handleToAmountChange = (amount: string) => {
-    if (!isValidAmount(toToken, amount)) {
+    const fromToken = tokens[fromTokenId];
+    const toToken = tokens[toTokenId];
+    if (!isValidAmount(amount, toToken.decimals)) {
       return;
     }
 
-    const res = convertAmounts(toToken, fromToken, amount);
+    const res = convertAmounts(amount, prices[toTokenId], prices[fromTokenId], fromToken.decimals);
     setToAmount(amount);
     setFromAmount(res);
   };
@@ -75,14 +93,16 @@ function ExchangeWidget({ tokens }: Props) {
   return (
     <div className="flex flex-col flex-2 gap-y-4 rounded shadow-2xl px-8 py-10 max-w-xl min-w-l">
       <div className="text-lg mb-2">
-        Price: 1 {fromToken.symbol} = {convertAmounts(fromToken, toToken, "1")} {toToken.symbol}
+        Price: 1 {tokens[fromTokenId].symbol} ={" "}
+        {convertAmounts("1", prices[fromTokenId], prices[toTokenId], tokens[toTokenId].decimals)}{" "}
+        {tokens[toTokenId].symbol}
       </div>
       <ExchangeInputs
         label="From"
         tokens={fromTokenList}
         amount={fromAmount}
-        selectedToken={fromToken}
-        onTokenChange={handleFromTokenChange}
+        selectedTokenId={fromTokenId}
+        onSelectionChange={handleFromTokenChange}
         onAmountChange={handleFromAmountChange}
       />
       <div className="self-center">
@@ -92,8 +112,8 @@ function ExchangeWidget({ tokens }: Props) {
         label="To"
         tokens={toTokenList}
         amount={toAmount}
-        selectedToken={toToken}
-        onTokenChange={handleToTokenChange}
+        selectedTokenId={toTokenId}
+        onSelectionChange={handleToTokenChange}
         onAmountChange={handleToAmountChange}
       />
     </div>

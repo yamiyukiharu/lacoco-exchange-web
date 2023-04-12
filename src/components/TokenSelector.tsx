@@ -1,18 +1,15 @@
 import React, { useState } from "react";
 import { MdExpandMore } from "react-icons/md";
-import { Token } from "@/types";
 import Image from "next/image";
-import { Listbox } from "@headlessui/react";
 
 interface Props {
-  token: Token;
+  symbol: string;
+  icon: string;
   onClick: () => void;
 }
 
 function TokenSelector(props: Props) {
-  const { token, onClick } = props;
-
-  const { symbol, icon } = token;
+  const { symbol, icon, onClick } = props;
 
   return (
     <div

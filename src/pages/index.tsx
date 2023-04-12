@@ -3,14 +3,17 @@ import Clock from "@/components/Clock";
 import ExchangeWidget from "@/components/composed/ExchangeWidget";
 import useTokenPrices from "@/hooks/useTokenPrices";
 import { useEffect, useState } from "react";
+import { useTokenInfo } from "@/hooks/useTokenInfo";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const { prices: tokens, isLoading, isError } = useTokenPrices();
+  const { tokenPrices } = useTokenPrices();
+  const { tokenInfo } = useTokenInfo();
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    setMounted(true)
+    setMounted(true);
   }, []);
 
   return (
@@ -21,7 +24,7 @@ export default function Home() {
           <p className="text-2xl font-bold">Swap your favourite crypto easily with the best rates</p>
           {mounted && <Clock />}
         </div>
-        {tokens && <ExchangeWidget tokens={tokens} />}
+        {tokenInfo && tokenPrices && <ExchangeWidget tokens={tokenInfo} prices={tokenPrices} />}
       </div>
     </main>
   );
