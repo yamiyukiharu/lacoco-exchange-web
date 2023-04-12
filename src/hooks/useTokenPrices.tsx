@@ -8,22 +8,22 @@ const useTokenPrices = () => {
   const { data, isLoading, isError } = useQuery<Token[]>({
     queryKey: ["tokenPrices"],
     queryFn: async () => {
-      const res = await fetch("http://localhost:3000/api/tokens/prices");
-      const prices = await res.json() as TokenPricesDto;
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "tokens/prices");
+      const prices = (await res.json()) as TokenPricesDto;
 
-      return Object.keys(tokenInfo!).map(key => {
+      return Object.keys(tokenInfo!).map((key) => {
         const usdPrice = prices[key];
 
         return {
           ...tokenInfo![key],
           usdPrice,
         };
-      })
+      });
 
       // return Object.values(tokens);
     },
     enabled: !!tokenInfo,
-    refetchInterval: 3000,
+    refetchInterval: 10000,
   });
 
   return {

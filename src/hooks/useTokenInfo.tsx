@@ -5,7 +5,7 @@ export const useTokenInfo = () => {
   const { data, isLoading, isError } = useQuery<TokenInfoDto>(
     ["tokenInfo"],
     async () => {
-      const res = await fetch("http://localhost:3000/api/tokens");
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "tokens");
       return res.json();
     },
     { staleTime: Infinity, cacheTime: Infinity }
