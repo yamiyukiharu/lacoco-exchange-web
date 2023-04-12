@@ -9,7 +9,6 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
   const { prices: tokens, isLoading, isError } = useTokenPrices();
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true)
   }, []);

@@ -1,11 +1,18 @@
-export interface Token {
+export interface TokenInfo {
   name: string;
   symbol: string;
-  usdPrice: number;
-  decimalPlaces: number;
+  decimals: number;
   icon: string;
+};
+
+export interface TokenInfoDto {
+  [key: string]:TokenInfo
 }
 
-export interface TokenPrices {
-  [key: string]: Token;
+export interface TokenPricesDto {
+  [key: string]: number;
+}
+
+export interface Token extends TokenInfo {
+  usdPrice: number;
 }

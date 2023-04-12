@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BigNumber from "bignumber.js";
 import SwapButton from "@components/SwapButton";
 import ExchangeInputs from "@components/composed/ExchangeInputs";
@@ -20,7 +20,8 @@ function ExchangeWidget({ tokens }: Props) {
 
   const handleFromTokenChange = (token: Token) => {
     // account for change in decimal places of different tokens
-    const newFromAmount = new BigNumber(fromAmount).decimalPlaces(token.decimalPlaces, BigNumber.ROUND_DOWN).toString();
+    const newFromAmount =
+      fromAmount == "" ? "" : new BigNumber(fromAmount).decimalPlaces(token.decimals, BigNumber.ROUND_DOWN).toString();
 
     const res = convertAmounts(token, toToken, newFromAmount);
     setFromAmount(newFromAmount);
@@ -47,7 +48,7 @@ function ExchangeWidget({ tokens }: Props) {
   };
 
   const isValidAmount = (token: Token, amount: string) => {
-    const floatOnly = new RegExp(`^(?:\\d+|\\d*\\.\\d{0,${token.decimalPlaces}})$`);
+    const floatOnly = new RegExp(`^(?:\\d+|\\d*\\.\\d{0,${token.decimals}})$`);
     return floatOnly.test(amount) || amount === "";
   };
 

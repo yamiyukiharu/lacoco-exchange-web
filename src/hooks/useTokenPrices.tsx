@@ -1,45 +1,30 @@
-import { Token, TokenPrices } from "@/types";
+import { Token, TokenPricesDto } from "@/types";
 import { useQuery } from "@tanstack/react-query";
+import { useTokenInfo } from "./useTokenInfo";
 
 const useTokenPrices = () => {
-  const { data, isLoading, isError } = useQuery<Token[]>(
-    ["tokenPrices"],
-    async () => {
-      // const res = await fetch(
-      //   'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin%2Cethereum&vs_currencies=usd'
-      // );
-      // return res.json();
-      const tokens = {
-        USDT: {
-          name: "Tether",
-          symbol: "USDT",
-          usdPrice: 1.0,
-          decimalPlaces: 2,
-          icon: "https://assets.coingecko.com/coins/images/325/large/Tether-logo.png?1598003707",
-        },
-        BTC: {
-          name: "Bitcoin",
-          symbol: "BTC",
-          usdPrice: 33000.45,
-          decimalPlaces: 6,
-          icon: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
-        },
-        ETH: {
-          name: "Ethereum",
-          symbol: "ETH",
-          usdPrice: 2100.67,
-          decimalPlaces: 6,
-          icon: "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
-        },
-      };
-      console.log("hello");
-      // returns an array of tokens
-      return Object.values(tokens);
+  const { tokenInfo } = useTokenInfo();
+
+  const { data, isLoading, isError } = useQuery<Token[]>({
+    queryKey: ["tokenPrices"],
+    queryFn: async () => {
+      const res = await fetch("http://localhost:3000/api/tokens/prices");
+      const prices = await res.json() as TokenPricesDto;
+
+      return Object.keys(tokenInfo!).map(key => {
+        const usdPrice = prices[key];
+
+        return {
+          ...tokenInfo![key],
+          usdPrice,
+        };
+      })
+
+      // return Object.values(tokens);
     },
-    {
-      refetchInterval: 30000,
-    }
-  );
+    enabled: !!tokenInfo,
+    refetchInterval: 3000,
+  });
 
   return {
     prices: data,
