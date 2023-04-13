@@ -8,7 +8,7 @@ export const useTokenInfo = () => {
       const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "tokens");
       return await res.json();
     },
-    { staleTime: Infinity, cacheTime: Infinity }
+    { staleTime: Infinity, cacheTime: Infinity, retry: true }
   );
 
   return {

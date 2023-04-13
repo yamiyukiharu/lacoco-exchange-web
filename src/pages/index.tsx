@@ -4,6 +4,8 @@ import ExchangeWidget from "@/components/composed/ExchangeWidget";
 import useTokenPrices from "@/hooks/useTokenPrices";
 import { useEffect, useState } from "react";
 import { useTokenInfo } from "@/hooks/useTokenInfo";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +26,13 @@ export default function Home() {
           <p className="text-2xl font-bold">Swap your favourite crypto easily with the best rates</p>
           {mounted && <Clock />}
         </div>
-        {tokenInfo && tokenPrices && <ExchangeWidget tokens={tokenInfo} prices={tokenPrices} />}
+        {tokenPrices && tokenInfo ? (
+          <ExchangeWidget tokens={tokenInfo} prices={tokenPrices} />
+        ) : (
+          <div className="flex-2 rounded shadow-2xl w-96 h-96">
+            <Skeleton height="100%" />
+          </div>
+        )}
       </div>
     </main>
   );
