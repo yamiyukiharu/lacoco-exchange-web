@@ -30,6 +30,11 @@ Once done, open `http://localhost:8000/` in your browser to start interacting wi
 ## Testing
 Playwright is used as the end-end (e2e) testing framework
 
+First, install playwright and the browser tools with:
+```
+npx playwright install
+```
+
 To run all e2e tests:
 ```
 npx playwright test
