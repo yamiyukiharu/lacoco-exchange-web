@@ -8,7 +8,7 @@ interface Props {
 function AmountInput({ amount, onChange }: Props) {
   return (
     <input
-      type="tel"
+      name=""
       className="w-full h-full bg-opacity-10 border-2 text-lg p-2"
       value={amount}
       placeholder="0.0"

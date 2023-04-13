@@ -8,6 +8,7 @@ interface Props {
 function SwapButton({ onClick }: Props) {
   return (
     <button
+      data-testid="swap-button"
       className="w-12 h-12 rounded-full bg-cyan-500 text-white flex items-center justify-center"
       onClick={onClick}
     >

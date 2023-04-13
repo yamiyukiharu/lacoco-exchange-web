@@ -15,7 +15,7 @@ function DigitalClock() {
   }, []);
 
   return (
-    <div className="font-bold text-lg text-cyan-600">
+    <div className="font-bold text-lg text-cyan-600" data-testid="clock">
       <div>{time.format('dddd, MMMM DD, YYYY')}</div>
       <div>{time.format('h:mm:ss A')}</div>
     </div>

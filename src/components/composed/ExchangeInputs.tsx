@@ -44,7 +44,7 @@ function ExchangeInputs(props: Props) {
   const { icon, symbol } = tokens[selectedTokenId];
 
   return (
-    <div>
+    <div data-testid="widget-input">
       <div className="text-base font-light">{label}</div>
       <div className="h-12 flex flex-row gap-x-1 items-center justify-between">
         <AmountInput amount={amount} onChange={onAmountChange} />

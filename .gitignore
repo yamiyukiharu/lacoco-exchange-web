@@ -86,3 +86,6 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+/test-results/
+/playwright-report/
+/playwright/.cache/
