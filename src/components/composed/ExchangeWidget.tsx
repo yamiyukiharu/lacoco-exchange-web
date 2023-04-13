@@ -5,6 +5,7 @@ import SwapButton from "@components/SwapButton";
 import ExchangeInputs from "@components/composed/ExchangeInputs";
 import { convertAmounts } from "@/utils/convertAmounts";
 import { TokenInfo, TokenPrices } from "@/types";
+import Button from "../Button";
 
 interface Props {
   tokens: TokenInfo;
@@ -118,6 +119,8 @@ function ExchangeWidget({ tokens, prices }: Props) {
         onSelectionChange={handleToTokenChange}
         onAmountChange={handleToAmountChange}
       />
+      <div className="h-2"/>
+      <Button label="Exchange"/>
     </div>
   );
 }
