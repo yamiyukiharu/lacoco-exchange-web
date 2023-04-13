@@ -13,7 +13,7 @@ const useTokenPrices = () => {
 
       // return Object.values(tokens);
     },
-    refetchInterval: 5000,
+    refetchInterval: 10000,
   });
 
   return {
