@@ -62,6 +62,13 @@ test("can display widget", async ({ page }) => {
   await expect(page.getByTestId("widget")).toBeVisible();
 });
 
+test("price is displayed", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByTestId("widget")).toBeVisible();
+
+  await expect(page.getByTestId("price")).toHaveText("Price: 1 ETH = 0.05 BTC");
+});
+
 test("to amount changes when from amount changes", async ({ page }) => {
   await page.goto("/");
 
@@ -126,6 +133,9 @@ test("can select token at from dropdown", async ({ page }) => {
   // check that to amounts are updated
   const toInput = page.getByTestId("widget-input").filter({ hasText: "To" }).getByPlaceholder("0.0");
   await expect(toInput).toHaveValue("0.000025");
+
+  // check that price is updated
+  await expect(page.getByTestId("price")).toHaveText("Price: 1 DFI = 0.000025 BTC");
 });
 
 test("can select token at to dropdown", async ({ page }) => {
@@ -149,9 +159,12 @@ test("can select token at to dropdown", async ({ page }) => {
   // check that to amounts are updated
   const toInput = page.getByTestId("widget-input").filter({ hasText: "To" }).getByPlaceholder("0.0");
   await expect(toInput).toHaveValue("2000");
+
+  // check that price is updated
+  await expect(page.getByTestId("price")).toHaveText("Price: 1 ETH = 2000 DFI");
 });
 
-test("can swap from and to", async ({ page }) => {
+test("can swap from and to tokens", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByTestId("widget")).toBeVisible();
@@ -182,4 +195,7 @@ test("can swap from and to", async ({ page }) => {
 
   await expect(fromSelect).toHaveText("BTC");
   await expect(toSelect).toHaveText("ETH");
+
+  // check that price is updated
+  await expect(page.getByTestId("price")).toHaveText("Price: 1 BTC = 20 ETH");
 });

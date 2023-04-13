@@ -95,7 +95,7 @@ function ExchangeWidget({ tokens, prices }: Props) {
 
   return (
     <div className="flex flex-col flex-2 gap-y-4 rounded shadow-2xl px-8 py-10 max-w-xl min-w-l" data-testid="widget">
-      <div className="text-lg mb-2">
+      <div className="text-lg mb-2" data-testid="price">
         Price: 1 {tokens[fromTokenId].symbol} = {convertAmounts("1", fromTokenId, toTokenId)} {tokens[toTokenId].symbol}
       </div>
       <ExchangeInputs
